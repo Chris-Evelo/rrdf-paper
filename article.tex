@@ -4,7 +4,10 @@
 \usepackage[backend=biber,firstinits=true,sorting=none]{biblatex}
 \addbibresource{article.bib}
 
-\title{Accessing biological data in R with semantic web technologies}
+\title{Accessing biological data in R with semantic web technologies} % see comment on Skype
+% another question that might be answered in the text is whether this really is specific for biological data 
+% it could just as well be generic
+
 \author{Egon L.\ Willighagen$^{1,2}$}
 \begin{document}
 
@@ -33,55 +36,82 @@ Manuscript type: research article
 \begin{abstract}
 \noindent
 \textbf{Background}. Semantic Web technologies are increasingly used in biological database systems.
-The improved expressiveness show advantages in tracking provenance and allowing knowledge to be
-more explicitly annotated. The list of semantic web standards needs a complementary set of tools to
-handle data in those formats to use them in bioinformatics workflows. \\
+The improved expressiveness has advantages in tracking provenance and allowing knowledge to be
+more explicitly annotated. In order to use semantic web standards in bioinformatics workflows complementary tools are
+needed that can access data in semantic web format or that allow the usage semantic web query approaches. \\
 \textbf{Methods}. The approach proposed in this paper uses the Apache Jena library to create an
-environment where semantic web technologies can be use in the statistical environment R. The
+environment where semantic web technologies can be used in the statistical environment R. The
 code is exposed as two R packages available from the Comprehensive R Archive Network (CRAN). 
 The RJava library and a custom convenience class is used to bridge between R and the Jena library.\\
+% If you make it available on CRAN and not on Bioconductor that also indicates that it is generic. 
+% You might want to say so and inicate that your examples are from the biology domain but that the approach
+% can be used for any domain
 \textbf{Results}. We here present three examples showing how the Resource Description Framework
-(RDF) and SPARQL query standards can be employed in R. The first example takes input on BRCA1 SNPs
+(RDF) and the SPARQL query standards can be employed in R. The first example takes input on BRCA1 SNPs
 from a BioMart and converts this into a RDF data set. The second example runs a query on an
 experimental remote SPARQL end point provided by Uniprot, and searches textual annotations of
 proteins encoded by the BRCA1 gene. The third example shows how the package can be used to handle
 RDF returned by OpenTox web services. \\
+% Before capatilized acronymes one typically uses "an" not "a" 
+% Maybe you do, but it is always nice to describe how you would actually use this for a real use case
+% Since it is about semantic web approach you might want to really link data. I.e. first query one resource
+% do some statistical analysis on the results and then use the resulting data (e.g. divide the proteins in Uniprot
+% in groups using the number of SNPs / code length and see whether the ones with higher numbers share other 
+% properties (like are present in OMIM, or belong to certain GO classes). 
+% a very real usecase would be to ask ArrayExpress Atlas for all genes related to specific diseases and then check whether
+% that correlates with known disease-gene links from DisGeNet. (but that might be a different paper)
+% 
+% I think it is also important to show how this can be used in combination with BridgeDb mapping to also link resources 
+% that are not automatically linked. I think that would make it a lot more valuable. 
+% probably increasing usage of both this package and BridgeDb itself.
+%
 \textbf{Discussion}. The two provided library bring basic semantic web technologies to R.
 While only a subset of Apache Jena is currently exposed, it provides key methods to deal with
 RDF data and resources. The libraries are freely available from the CRAN under the 
 Affero GNU Public License version 3: \url{http://cran.r-project.org/web/packages/rrdf/}.
+% I think you can leave out the line about the subset. Your goal was not to expose all of Jena.
+%
 \end{abstract}
 
 \section{Introduction}
 
 Semantic Web technologies are finding their way into biological
-databases~\cite{Belleau2008,Chen2010,Samwald2011,Williams2012,Willighagen2013}. The recent launch of the
+databases~\cite{Belleau2008,Chen2010,Samwald2011,Williams2012,Willighagen2013}. The adoption taking place 
+for longer already~\cite{EBIRDFPlatform}, but the pace is now increasing.The recent launch of the
 Resource Description Framework (RDF) services at the European Bioinformatics Institute is a good example
-of the impact it has on the field, despite the adoption taking place for longer already~\cite{EBIRDFPlatform}.
+of the impact it has on the field.
 At the same time, most new databases do not yet use semantic web technologies, which may be partly
 caused by the lack of availability of tools to handle RDF data.
+% ideally I would add: 
+% and in part by the lack of good tutorials and examples to show actual usage possibilities, which is why we 
+% provide some of these here.
 
 RDF allows the combination of a machine readable framework with the use of ontologies that allow
 sharing data and the meaning in the some data exchange format. This is enabled by a set of open
 specifications, such as the underlying RDF, RDF Schema, the Web Ontology Language, and serialization formats
 such as RDF/XML, N-TRIPLES, Notation3 (N3), and Turtle. Crucial, however, seems the specification of the SPARQL
-query language that allow extracting data from local or remote RDF triple stores~\cite{Seaborne2009}. In fact,
+query language that allows extracting data from local or remote RDF triple stores~\cite{Seaborne2009}. In fact,
 federated SPARQL queries allow extracting data from multiple triple stores at the same time.
 
 At the same time, R has established itself as a key tool for statistics, particularly in the biological
 sciences. Many packages have been developed for this domain and are available from CRAN and Bioconductor,
 allowing to combine various bioinformatics and data analysis approaches. These packages include,
 for example, biomaRt, which have the purpose of extracting information from a remote database.
+% I suppose you mean remote Mart's which makes it less general than what you provide here, right?
 
 We here introduce two packages, rrdflibs and rrdf, for the statistics environment R, based on the Apache
 Jena library and the RJava interface to Java~\cite{RMan,Jena,RJava}. Compared to the existing SPARQL
 package, this package adds general RDF data handling~\cite{VanHage2013}. Using this package we show how
 data aggregation can be performed from remote SPARQL end points, and how local data in other formats
 can be converted into RDF to querying with SPARQL.
+% You write "we" but actually there is only one author.
+% The vanHage citation seems to be in a strange place. The line about "compared" is comparing this package, right?
+% I think the reference should 
+
 
 \section{Materials \& Methods}
 
-The rrdf packages provides RDF and SPARQL functionality by exposing that functionality from the
+The rrdf packages provide RDF and SPARQL functionality by exposing that functionality from the
 Apache Jena library~\cite{Jena}. The rrdflibs package contains the Apache Jena libraries and
 nothing more. This package is close to 7~MiB large but does not change frequently. The rrdf
 package contains the R functions that wrap around the Jena functionality and convert data structures
@@ -89,16 +119,21 @@ where needed. This package is about 112~kiB but changes more frequently. Using t
 the Comprehensive R Archive Network (CRAN) server has the least amount of download throughput.
 The Jena functionality is accessible using the rJava library~\cite{RJava} which handles loading
 of the Java archives and provides methods to instantiate classes and call methods.
+% this is a bit vague. How often is "not frequently"? And if it changes, why does it? Same for the actual rrdf package
+% I think the libraries change when the community agrees on a change and rrdf does when you want to add functionality
+% is that right? If so do you have plans for that?
+
 
 The source code of the package is available from GitHub at \url{http://github.com/egonw/rrdf/} and
 binary packages are available from CRAN at \url{http://cran.r-project.org/web/packages/rrdf/}.
 The first patch is from March 2011 while the most recent patches are from late 2013 when the
 rrdflibs package was updated for Apache Jena 2.11.
+% SO how is the rrdflibs package created? Is there code to do that? If so where is it?
 
 \section{Results and Discussion}
 
 The rrdf package provides basic and less basic functionality for aggregation and analysis of RDF data.
-The package can be install and loaded with these commands:
+The package can be installed and loaded with these commands:
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -109,11 +144,15 @@ library(rrdf)
 
 \subsection{Triple stores}
 
-To handle triples, we first need a triple store. At this moment only in-memory stores are
+To handle RDF triples, we first need a triple store. At this moment only in-memory stores are
 supported, though Jena's TDB also provides on-disk triple stores; this puts limitations to
 the amount of data you can analyze in one study.
 The package supports two kinds of stores, one that has minimal ontology support, and one
-basically just handles triples. Both can be created with the \textit{new.rdf} command:
+that basically just handles triples. Both can be created with the \textit{new.rdf} command:
+% this line reads a bit disappointing. You first mention "minimal" ontology support, after that I expect the other 
+% one to be more extensive. I would turn that around.
+% What happens if people have their own external tripls store already? Can you use that. I assume you can query it 
+% (using SPARQL) but not store anything there. Is that correct?
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -126,6 +165,11 @@ When data is not read from a file or downloaded, but created from data in anothe
 such as an R matrix, individual triples can be added to a store. This works for both
 object properties and data properties. The former option links a subject to an object
 resource, while the latter links a subject to a literal value:
+% I think this can be clearer. I will normally want to store both?
+% And why would I do that in the first place? I cannot save them to an external source. So I probably
+% want to work with external data I get usuing rrdf plus internal data I already had. What is the advantage of
+% doing that in triple format over doing it from what you already had? That is probably trivial to you but for the
+% average R user it might not be.
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -174,6 +218,8 @@ store = load.rdf("file.n3", format="N3")
 
 As an example, we will here create RDF for a small data set with information on five single nucleotide
 polymorphisms (SNPs) in the BRCA1 gene, extracted with biomaRt~\cite{Durinck2005}:
+% this sounds like a rather random example to me. Why these specifoc 5 SNPs? Why not get the ones that are most 
+% important for breast cancer somehow first and then find those?
 
 \begin{footnotesize}
 \begin{verbatim}
